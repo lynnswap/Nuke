@@ -10,6 +10,7 @@
 - Deprecate `ImagePipeline.Configuration.callbackQueue` – this feature will be removed in Nuke 13
 - `ImagePrefetcher.didComplete` closure is now annotated with `@MainActor @Sendable`
 - Drop Xcode 14 support
+- Add `isStoringOriginalImagesInMemoryCache` option to store original images in memory for processed requests
 
 ## Nuke 12.7.3
 

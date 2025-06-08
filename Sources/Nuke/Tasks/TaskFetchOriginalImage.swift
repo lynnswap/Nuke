@@ -48,6 +48,9 @@ final class TaskFetchOriginalImage: AsyncPipelineTask<ImageResponse>, @unchecked
 
         switch result {
         case .success(let response):
+            if context.isCompleted {
+                storeOriginalImageInMemoryCacheIfNeeded(response.container)
+            }
             send(value: response, isCompleted: context.isCompleted)
         case .failure(let error):
             if context.isCompleted {
@@ -65,5 +68,33 @@ final class TaskFetchOriginalImage: AsyncPipelineTask<ImageResponse>, @unchecked
         let decoder = pipeline.delegate.imageDecoder(for: context, pipeline: pipeline)
         self.decoder = decoder
         return decoder
+    }
+
+    private func storeOriginalImageInMemoryCacheIfNeeded(_ container: ImageContainer) {
+        let request = makeSanitizedRequest()
+        guard shouldStoreOriginalInMemoryCache(),
+              let imageCache = pipeline.delegate.imageCache(for: request, pipeline: pipeline) else {
+            return
+        }
+        let key = pipeline.cache.makeImageCacheKey(for: request)
+        imageCache[key] = container
+    }
+
+    private func makeSanitizedRequest() -> ImageRequest {
+        var request = request
+        request.processors = []
+        request.userInfo[.thumbnailKey] = nil
+        return request
+    }
+
+    private func shouldStoreOriginalInMemoryCache() -> Bool {
+        guard pipeline.configuration.isStoringOriginalImagesInMemoryCache else {
+            return false
+        }
+        let tasks = imageTasks
+        guard tasks.contains(where: { !$0.request.options.contains(.disableMemoryCacheWrites) }) else {
+            return false
+        }
+        return !request.processors.isEmpty
     }
 }

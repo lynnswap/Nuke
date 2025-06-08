@@ -456,6 +456,40 @@ class ImagePipelineCacheTests: XCTestCase {
         XCTAssertNil(diskCache.cachedData(for: cache.makeDataCacheKey(for: request)))
     }
 
+    // MARK: Store Original Images
+
+    func testStoreOriginalImageInMemoryWhenEnabled() {
+        // GIVEN
+        pipeline = pipeline.reconfigured {
+            $0.isStoringOriginalImagesInMemoryCache = true
+        }
+        let processed = ImageRequest(url: Test.url, processors: [MockImageProcessor(id: "p1")])
+
+        // WHEN
+        expect(pipeline).toLoadImage(with: processed)
+        wait()
+
+        // THEN original image is cached in memory
+        let originalKey = pipeline.cache.makeImageCacheKey(for: ImageRequest(url: Test.url))
+        XCTAssertNotNil(memoryCache[originalKey])
+    }
+
+    func testStoreOriginalImageInMemoryWhenDisabled() {
+        // GIVEN
+        pipeline = pipeline.reconfigured {
+            $0.isStoringOriginalImagesInMemoryCache = false
+        }
+        let processed = ImageRequest(url: Test.url, processors: [MockImageProcessor(id: "p1")])
+
+        // WHEN
+        expect(pipeline).toLoadImage(with: processed)
+        wait()
+
+        // THEN original image is not cached in memory
+        let originalKey = pipeline.cache.makeImageCacheKey(for: ImageRequest(url: Test.url))
+        XCTAssertNil(memoryCache[originalKey])
+    }
+
     // MARK: - Image Orientation
 
 #if canImport(UIKit)

@@ -50,6 +50,7 @@ pipeline.cache[ImageRequest(url: url)] = nil
 ```
 
 > ``ImageContainer`` contains some metadata about the image, and in the case of animated images or other images that require non-trivial rendering, also contains `data`. It also allows you to distinguish between progressive previews in case ``ImagePipeline/Configuration-swift.struct/isStoringPreviewsInMemoryCache`` option is enabled.
+> You can also store original images for processed requests in memory using ``ImagePipeline/Configuration-swift.struct/isStoringOriginalImagesInMemoryCache``.
 
 All ``ImagePipeline/Cache-swift.struct`` respect request cache control options.
 

@@ -27,6 +27,7 @@ To learn more about caching, see <doc:caching>.
 - ``dataCachePolicy``
 - ``ImagePipeline/DataCachePolicy``
 - ``isStoringPreviewsInMemoryCache``
+- ``isStoringOriginalImagesInMemoryCache``
 
 ### Other Options
 
